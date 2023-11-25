@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    main {
+      background-color: #ecf0f1;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    #taskInput {
+      width: 70%;
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #taskList {
+      list-style: none;
+      padding: 0;
+    }
+    #taskList li {
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #taskList li button {
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      margin-left: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #taskList li button:hover {
+      background-color: #c0392b;
+    }
+  </style>
+  <title>Todo List</title>
+</head>
+<body>
+
+  <header>
+    <h1>Todo List</h1>
+  </header>
+
+  <main>
+    <label for="taskInput">Add a new task:</label>
+    <input type="text" id="taskInput" placeholder="Enter task">
+    <button onclick="addTask()">Add Task</button>
+
+    <ul id="taskList"></ul>
+  </main>
+
+  <script>
+    // Check for existing tasks in localStorage
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const taskList = document.getElementById('taskList');
+
+    // Display existing tasks
+    savedTasks.forEach(task => {
+      createTaskElement(task);
+    });
+
+    function addTask() {
+      const taskInput = document.getElementById('taskInput');
+      const taskText = taskInput.value.trim();
+
+      if (taskText !== '') {
+        const task = { text: taskText, id: Date.now() };
+        createTaskElement(task);
+        savedTasks.push(task);
+        updateLocalStorage();
+        taskInput.value = '';
+      }
+    }
+
+    function createTaskElement(task) {
+      const li = document.createElement('li');
+      li.innerHTML = `${task.text} <button onclick="deleteTask(${task.id})">Delete</button>`;
+      taskList.appendChild(li);
+    }
+
+    function deleteTask(taskId) {
+      const updatedTasks = savedTasks.filter(task => task.id !== taskId);
+      savedTasks.length = 0; // Clear the array
+      updatedTasks.forEach(task => savedTasks.push(task));
+      updateLocalStorage();
+      renderTasks();
+    }
+
+    function updateLocalStorage() {
+      localStorage.setItem('tasks', JSON.stringify(savedTasks));
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      savedTasks.forEach(task => {
+        createTaskElement(task);
+      });
+    }
+  </script>
+
+</body>
+</html>
